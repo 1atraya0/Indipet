@@ -248,6 +248,10 @@ type Snapshot = {
 }
 
 const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const SUPABASE_CONFIGURED = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL
+  && (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+)
 const tooltipStyle = {
   contentStyle: { background: 'rgba(15,6,0,0.98)', border: '1px solid rgba(255,140,66,0.25)', borderRadius: '12px', color: '#fff7f2', fontSize: '12px' },
   cursor: { fill: 'rgba(255,107,53,0.06)' },
@@ -370,6 +374,14 @@ export default function SuperAdminDashboard() {
       setRefreshing(true)
     } else {
       setLoading(true)
+    }
+
+    if (!SUPABASE_CONFIGURED) {
+      setSnapshot(null)
+      setSeedMsg('Supabase environment variables are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) in Vercel, then redeploy.')
+      setLoading(false)
+      setRefreshing(false)
+      return
     }
 
     try {
@@ -1008,10 +1020,20 @@ export default function SuperAdminDashboard() {
   snapshotRef.current = snapshot
 
   useEffect(() => {
+    if (!SUPABASE_CONFIGURED) {
+      setLoading(false)
+      setSeedMsg('Supabase environment variables are missing. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) in Vercel, then redeploy.')
+      return
+    }
+
     fetchDashboard(false)
   }, [fetchDashboard])
 
   useEffect(() => {
+    if (!SUPABASE_CONFIGURED) {
+      return
+    }
+
     const tables = [
       'locations',
       'employees',
@@ -1044,11 +1066,20 @@ export default function SuperAdminDashboard() {
   }, [fetchDashboard])
 
   useEffect(() => {
+    if (!SUPABASE_CONFIGURED) {
+      return
+    }
+
     const timer = setInterval(() => fetchDashboard(true), 15 * 60 * 1000)
     return () => clearInterval(timer)
   }, [fetchDashboard])
 
   async function seedDatabase() {
+    if (!SUPABASE_CONFIGURED) {
+      setSeedMsg('Cannot seed without Supabase public env vars. Add them in Vercel and redeploy first.')
+      return
+    }
+
     setSeeding(true)
     setSeedMsg('')
     try {
