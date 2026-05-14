@@ -6,7 +6,7 @@ import { Bell, Search, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 
 const pageLabels: Record<string, { title: string; subtitle: string; emoji: string }> = {
-  '/dashboard': { title: 'Dashboard', subtitle: 'System overview across all locations', emoji: '🏠' },
+  '/': { title: 'Dashboard', subtitle: 'System overview across all locations', emoji: '🏠' },
   '/employees': { title: 'Employees', subtitle: 'Manage all employee records', emoji: '🐕' },
   '/leave-attendance': { title: 'Leave & Attendance', subtitle: 'Approvals, overrides, and biometric data', emoji: '📅' },
   '/shift-roster': { title: 'Shift & Roster', subtitle: 'Generate and manage rosters', emoji: '🔄' },
