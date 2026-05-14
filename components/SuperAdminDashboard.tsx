@@ -362,9 +362,13 @@ export default function SuperAdminDashboard() {
   const safeSelect = useCallback(async <T,>(query: PromiseLike<{ data: T[] | null; error: { message: string } | null }>, fallback: T[] = []): Promise<T[]> => {
     try {
       const { data, error } = await query
-      if (error) return fallback
+      if (error) {
+        console.error('Supabase query error:', error.message)
+        return fallback
+      }
       return data ?? fallback
-    } catch {
+    } catch (err) {
+      console.error('Supabase select exception:', err instanceof Error ? err.message : String(err))
       return fallback
     }
   }, [])
@@ -924,8 +928,11 @@ export default function SuperAdminDashboard() {
       })
       setLastUpdated(new Date())
       setSeedMsg('')
-    } catch {
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : String(err)
+      console.error('Dashboard fetch error:', errMsg)
       setSnapshot(null)
+      setSeedMsg(`Dashboard error: ${errMsg}`)
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -1172,6 +1179,18 @@ export default function SuperAdminDashboard() {
           <RefreshCw size={14} />
         </motion.button>
       </div>
+
+      {!SUPABASE_CONFIGURED && (
+        <motion.div initial={{ opacity: 0, y: -12 }} animate={{ opacity: 1, y: 0 }} style={{ padding: '14px 18px', borderRadius: '12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', marginBottom: '20px', color: '#fca5a5', fontSize: '12px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <AlertTriangle size={14} />
+          <div>
+            <strong>Dashboard Setup Required</strong>
+            <div style={{ fontSize: '11px', marginTop: '4px', color: '#f87171' }}>
+              Missing Supabase credentials. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (or NEXT_PUBLIC_SUPABASE_ANON_KEY) to your Vercel environment variables and redeploy.
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="paw-bg" style={{ padding: '28px 32px', marginBottom: '22px', background: 'linear-gradient(135deg, rgba(255,107,53,0.12) 0%, rgba(255,140,66,0.05) 100%)', border: '1px solid rgba(255,107,53,0.25)', borderRadius: '20px', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px' }}>
         <div>
