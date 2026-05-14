@@ -1,1 +1,1 @@
-export { default } from '../../../leave-attendance/page'
+export { default } from '../../../dashboard/leave-attendance/page'

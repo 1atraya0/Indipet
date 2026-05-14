@@ -12,26 +12,26 @@ import {
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', emoji: '🏠' },
-  { href: '/employees', icon: Users, label: 'Employees', emoji: '🐕' },
-  { href: '/leave-attendance', icon: CalendarDays, label: 'Leave & Attendance', emoji: '📅' },
-  { href: '/leave-attendance/calendar', icon: CalendarDays, label: 'Holidays', emoji: '🗓️' },
-  { href: '/shift-roster', icon: Clock, label: 'Shift & Roster', emoji: '🔄' },
-  { href: '/targets', icon: Target, label: 'Targets', emoji: '🎯' },
-  { href: '/store-operations', icon: Store, label: 'Store Operations', emoji: '🏪' },
-  { href: '/analytics', icon: BarChart3, label: 'Analytics', emoji: '📊' },
+  { href: '/dashboard/employees', icon: Users, label: 'Employees', emoji: '🐕' },
+  { href: '/dashboard/leave-attendance', icon: CalendarDays, label: 'Leave & Attendance', emoji: '📅' },
+  { href: '/dashboard/leave-attendance/calendar', icon: CalendarDays, label: 'Holidays', emoji: '🗓️' },
+  { href: '/dashboard/shift-roster', icon: Clock, label: 'Shift & Roster', emoji: '🔄' },
+  { href: '/dashboard/targets', icon: Target, label: 'Targets', emoji: '🎯' },
+  { href: '/dashboard/store-operations', icon: Store, label: 'Store Operations', emoji: '🏪' },
+  { href: '/dashboard/analytics', icon: BarChart3, label: 'Analytics', emoji: '📊' },
 ]
 
 const governanceItems = [
-  { href: '/payroll', icon: DollarSign, label: 'Payroll Engine', emoji: '💰' },
-  { href: '/commission', icon: Award, label: 'Commission', emoji: '💎' },
-  { href: '/contractors', icon: Handshake, label: 'Contractors', emoji: '🤝' },
-  { href: '/master-data', icon: Database, label: 'Master Data', emoji: '📋' },
-  { href: '/access-control', icon: Shield, label: 'Access Control', emoji: '🔐' },
-  { href: '/audit', icon: FileSearch, label: 'Audit & Compliance', emoji: '📜' },
+  { href: '/dashboard/payroll', icon: DollarSign, label: 'Payroll Engine', emoji: '💰' },
+  { href: '/dashboard/commission', icon: Award, label: 'Commission', emoji: '💎' },
+  { href: '/dashboard/contractors', icon: Handshake, label: 'Contractors', emoji: '🤝' },
+  { href: '/dashboard/master-data', icon: Database, label: 'Master Data', emoji: '📋' },
+  { href: '/dashboard/access-control', icon: Shield, label: 'Access Control', emoji: '🔐' },
+  { href: '/dashboard/audit', icon: FileSearch, label: 'Audit & Compliance', emoji: '📜' },
 ]
 
 const hrItems = [
-  { href: '/hr-admin', icon: UserCheck, label: 'HR Admin', emoji: '👔' },
+  { href: '/dashboard/hr-admin', icon: UserCheck, label: 'HR Admin', emoji: '👔' },
 ]
 
 interface NavGroupProps {

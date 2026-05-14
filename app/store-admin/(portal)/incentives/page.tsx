@@ -1,1 +1,1 @@
-export { default } from '../../../commission/page'
+export { default } from '../../../dashboard/commission/page'

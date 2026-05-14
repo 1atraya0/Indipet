@@ -1,1 +1,1 @@
-export { default } from '../../../shift-roster/page'
+export { default } from '../../../dashboard/shift-roster/page'
