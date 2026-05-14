@@ -1,0 +1,100 @@
+'use client'
+
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import GlassCard from '@/components/GlassCard'
+import StatCard from '@/components/StatCard'
+import DataTable from '@/components/DataTable'
+import { supabase } from '@/lib/supabase'
+import { useSupabaseTable } from '@/hooks/useSupabase'
+import type { EmployeeCategory } from '@/lib/types'
+import { Plus, X } from 'lucide-react'
+
+export default function EmployeeCategoriesPage() {
+  const { data, loading, refetch } = useSupabaseTable<EmployeeCategory>(
+    () => supabase.from('employee_category_master').select('*').order('name'),
+    'employee_category_master'
+  )
+
+  const [showModal, setShowModal] = useState(false)
+  const [form, setForm] = useState({ name: '', code: '', description: '' })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  async function submitForm(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    try {
+      const { error: err } = await supabase.from('employee_category_master').insert([{
+        name: form.name,
+        code: form.code,
+        description: form.description,
+      }] as never)
+      if (err) throw new Error(err.message)
+      setShowModal(false)
+      setForm({ name: '', code: '', description: '' })
+      await refetch()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to create category')
+    } finally { setSaving(false) }
+  }
+
+  return (
+    <div style={{ padding: '28px 32px 48px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
+        <StatCard label="Total Categories" value={data.length} icon="📂" color="#60a5fa" delay={0.05} loading={loading} />
+        <StatCard label="Active Codes" value={data.length} icon="✅" color="#34d399" delay={0.1} loading={loading} />
+      </div>
+
+      <GlassCard delay={0.15} style={{ padding: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', padding: '0 24px', borderBottom: '1px solid rgba(255,140,66,0.1)', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)', margin: '16px 0', padding: 0 }}>Employee Categories</h2>
+          <motion.button whileHover={{ scale: 1.02 }} className="btn-primary" onClick={() => setShowModal(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', marginRight: 0, fontSize: '12px', padding: '8px 14px' }}>
+            <Plus size={12} /> Add Category
+          </motion.button>
+        </div>
+        <DataTable loading={loading} data={data} emptyIcon="📂" emptyMessage="No categories"
+          columns={[
+            { key: 'name', label: 'Category', render: row => <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{row.name}</span> },
+            { key: 'code', label: 'Code', render: row => <code style={{ fontSize: '11px', background: 'rgba(255,255,255,0.06)', padding: '2px 7px', borderRadius: '5px' }}>{row.code}</code> },
+            { key: 'description', label: 'Description', render: row => row.description || '—' },
+          ]}
+        />
+      </GlassCard>
+
+      <AnimatePresence>
+        {showModal && (
+          <motion.div className="modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)}>
+            <motion.div className="modal-content" initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }} onClick={e => e.stopPropagation()} style={{ maxWidth: '440px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>📂 Add Category</h2>
+                <button onClick={() => setShowModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+              </div>
+              {error && <p style={{ fontSize: '12px', color: '#fca5a5', marginBottom: '12px', padding: '10px 14px', background: 'rgba(239,68,68,0.08)', borderRadius: '8px' }}>{error}</p>}
+              <form onSubmit={submitForm} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Category Name</label>
+                  <input required className="glass-input" placeholder="Full-Time" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Code</label>
+                  <input required className="glass-input" placeholder="FT" value={form.code} onChange={e => setForm(p => ({ ...p, code: e.target.value.toUpperCase() }))} maxLength={5} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: 600, display: 'block', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Description</label>
+                  <textarea className="glass-input" placeholder="Category description..." value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} rows={3} style={{ resize: 'vertical' }} />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                  <button type="button" className="btn-ghost" style={{ flex: 1 }} onClick={() => setShowModal(false)}>Cancel</button>
+                  <button type="submit" className="btn-primary" style={{ flex: 2 }} disabled={saving}>{saving ? 'Creating...' : 'Add Category'}</button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
