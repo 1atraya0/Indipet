@@ -25,7 +25,7 @@ const typeBadge = (t: Employee['employment_type']) => {
 const EMPTY_FORM = { full_name: '', email: '', phone: '', designation: '', department: '', employment_type: 'full_time', date_of_joining: '' }
 
 export default function EmployeesPage() {
-  const { data: employees, loading, refetch } = useSupabaseTable<Employee>(
+  const { data: employees, loading, error: tableError, refetch } = useSupabaseTable<Employee>(
     () => supabase.from('employees').select('*').order('created_at', { ascending: false }),
     'employees'
   )
@@ -84,6 +84,12 @@ export default function EmployeesPage() {
 
   return (
     <div style={{ padding: '28px 32px 48px' }}>
+      {tableError && (
+        <div style={{ marginBottom: '18px', padding: '14px 18px', borderRadius: '12px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.22)', color: '#fca5a5', fontSize: '12px', fontWeight: 600 }}>
+          Employees page setup required: {tableError}
+        </div>
+      )}
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
         <StatCard label="Total Employees" value={employees.length} icon="🐕" delay={0.05} loading={loading} />
         <StatCard label="Active" value={activeCount} icon="✅" color="#34d399" delay={0.1} loading={loading} />

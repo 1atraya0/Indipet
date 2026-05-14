@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { SUPABASE_CONFIGURED, supabase } from '@/lib/supabase'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 type QueryFn<T> = () => PromiseLike<{ data: T[] | null; error: { message: string } | null }>
@@ -38,7 +38,7 @@ export function useSupabaseTable<T>(
 
   // Supabase Realtime subscription
   useEffect(() => {
-    if (!realtimeTable) return
+    if (!realtimeTable || !SUPABASE_CONFIGURED) return
     let channel: RealtimeChannel
 
     const setup = () => {
@@ -77,6 +77,8 @@ export function useSupabaseCount(table: string) {
   useEffect(() => { fetch() }, [fetch])
 
   useEffect(() => {
+    if (!SUPABASE_CONFIGURED) return
+
     const channel = supabase
       .channel(`count:${table}:${Date.now()}`)
       .on('postgres_changes' as never, { event: '*', schema: 'public', table }, () => fetch())

@@ -3,6 +3,11 @@ import type { Database } from './types'
 
 let supabaseClient: SupabaseClient<Database> | null = null
 
+export const SUPABASE_CONFIGURED = Boolean(
+	process.env.NEXT_PUBLIC_SUPABASE_URL &&
+	(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+)
+
 export function getSupabaseClient() {
 	if (supabaseClient) return supabaseClient
 
