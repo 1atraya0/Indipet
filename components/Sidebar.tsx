@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 
 const navItems = [
-  { href: '/', icon: LayoutDashboard, label: 'Dashboard', emoji: '🏠' },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', emoji: '🏠' },
   { href: '/employees', icon: Users, label: 'Employees', emoji: '🐕' },
   { href: '/leave-attendance', icon: CalendarDays, label: 'Leave & Attendance', emoji: '📅' },
   { href: '/leave-attendance/calendar', icon: CalendarDays, label: 'Holidays', emoji: '🗓️' },

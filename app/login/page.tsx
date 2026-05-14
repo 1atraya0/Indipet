@@ -84,7 +84,7 @@ export default function LoginPage() {
       if (selectedRole === 'super_admin') {
         if (email === 'admin@indipet.com' && password === 'demo@123') {
           localStorage.setItem('userRole', 'super_admin')
-          router.push('/')
+          router.push(roleHome('super_admin'))
         } else {
           throw new Error('Invalid super admin credentials')
         }
