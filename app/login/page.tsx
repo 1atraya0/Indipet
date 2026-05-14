@@ -48,7 +48,7 @@ const credBoxStyle: CSSProperties = {
 }
 
 function roleHome(role: Role) {
-  if (role === 'super_admin') return '/'
+  if (role === 'super_admin') return '/dashboard'
   if (role === 'store_admin') return '/store-admin'
   return '/employee'
 }
