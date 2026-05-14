@@ -1,13 +1,24 @@
-import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-)
+import { createClient } from '@supabase/supabase-js'
+
+export const runtime = 'nodejs'
+
+function createSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error('Supabase environment variables are required for seeding')
+  }
+
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 export async function POST() {
   try {
+    const supabase = createSupabaseClient()
+
     // ── 1. Locations ──────────────────────────────────────
     const { error: locErr } = await supabase.from('locations').upsert([
       { id: 'loc-001', name: 'Indipet Kolkata West', code: 'KOL-W', type: 'company_owned', state: 'West Bengal', city: 'Kolkata', address: '12, Lake Gardens, Kolkata - 700045', status: 'active', operating_hours_start: '09:00', operating_hours_end: '20:00', minimum_staff_strength: 4 },
@@ -202,6 +213,8 @@ export async function POST() {
 }
 
 export async function GET() {
+  const supabase = createSupabaseClient()
+
   const checks = await Promise.all([
     supabase.from('employees').select('id', { count: 'exact', head: true }),
     supabase.from('locations').select('id', { count: 'exact', head: true }),
