@@ -6,11 +6,15 @@
 import type { Payslip, SalaryStructure, MinimumWage, EmployeeSalary } from './types'
 
 export interface PayrollInput {
-  employeeSalary: EmployeeSalary & { salary_structure_master: SalaryStructure | null }
+  employeeSalary: EmployeeSalary & {
+    salary_structure_master: SalaryStructure | null
+    // Optional when joined from employee_finance table.
+    pf_wage_cap_elected?: boolean
+  }
   basicSalary: number
   workingDays?: number
   totalDays?: number
-  minimumWage?: MinimumWage | null
+  minimumWage?: (MinimumWage & { category?: string }) | null
   pfEligible?: boolean
   esicEligible?: boolean
   ptState?: string
@@ -122,7 +126,8 @@ export function calculatePayroll(input: PayrollInput): PayrollOutput {
     meetsMinimumWage = netPay >= monthlyMinimumWage
 
     if (!meetsMinimumWage) {
-      warning = `Net pay (₹${netPay}) is below minimum wage (₹${monthlyMinimumWage}) for ${input.minimumWage.state} - ${input.minimumWage.category}`
+      const categoryLabel = input.minimumWage.category || input.minimumWage.employee_category_id || 'Unspecified'
+      warning = `Net pay (₹${netPay}) is below minimum wage (₹${monthlyMinimumWage}) for ${input.minimumWage.state} - ${categoryLabel}`
     }
   }
 
